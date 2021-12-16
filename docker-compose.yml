@@ -1,0 +1,21 @@
+version: "3.8"
+services:
+  web:
+    build:  .
+    command: python /chaty/manage.py runserver 0.0.0.0:8000
+    environment:
+      - SECRET_KEY=django-insecure-6po&b5@zte-^(#+-)(=e$qo1y!faq=*c!igsftjw9-8$z+mg1x
+      - DEBUG=1
+      - ENVIROMENT=development
+    volumes:
+      - .:/chaty
+    ports:
+      - 8000:8000
+    depends_on:
+      - db
+  db:
+    image: postgres:12.7
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
