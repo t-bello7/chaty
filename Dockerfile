@@ -18,14 +18,17 @@ RUN chmod 775 /chaty
 USER appuser
 
 # Install dependencies 
-# COPY Pipfile Pipfile.lock /chaty/
-COPY requirements.txt /chaty/
+# COPY requirements.txt /chaty/
+
+COPY Pipfile Pipfile.lock /chaty/
+RUN pip install pipenv && pipenv install --system
+
 
 # RUN pip install --upgrade pip \
 #     pip install pipenv && pipenv install --deploy --system
 #Ask about this pipenv and docker 
 
-RUN pip install -r requirements.txt
+# RUN pip install -r requirements.txt
 
 COPY . /chaty/
 CMD gunicorn config.wsgi.application --bind 0.0.0.0:$PORT

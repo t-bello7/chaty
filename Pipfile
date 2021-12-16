@@ -4,8 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-psycopg2 = ">=2.8"
 Django = "<4.0,>=3.0"
+djangorestframework = "*"
+psycopg2-binary = "*"
+django-cors-headers = "*"
+channels = "*"
+channels-redis = "*"
 
 [dev-packages]
 
