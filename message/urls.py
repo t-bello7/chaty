@@ -1,5 +1,5 @@
 from django.urls import path
-from message.views import RoomAPIView, MessagerAPIView, ReceiptsAPIView
+from message.views import RoomAPIView, MessagerAPIView
 
 urlpatterns = [
     path('room/',RoomAPIView.as_view(), name='room'),
