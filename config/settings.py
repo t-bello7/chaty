@@ -12,7 +12,7 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 import os
 from pathlib import Path
 from corsheaders.defaults import default_methods, default_headers
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -22,12 +22,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('SECRET_KEY')
-
+AUTH_USER_MODEL = "authentication.User"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = int(os.environ.get('DEBUG', default=0))
 
-ALLOWED_HOSTS = []
+
+SECURE_SSL_REDIRECT=False
+SESSION_COOKIE_SECURE=False
+CSRF_COOKIE_SECURE=False
+
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -43,10 +48,14 @@ INSTALLED_APPS = [
 
     #Extenal apps
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
+    'drf_spectacular',
+    'channels',
 
     # Applications
-    'message'
+    'message',
+    'authentication'
 ]
 
 MIDDLEWARE = [
@@ -67,7 +76,7 @@ CORS_ORIGIN_WHITELIST = (
 
 CORS_ALLOW_METHODS = list(default_methods) 
 CORS_ALLOW_HEADERS = list(default_headers)
-CORS_ALLOW_CREDENTIALS = None
+# CORS_ALLOW_CREDENTIALS = None
 
 ROOT_URLCONF = 'config.urls'
 
@@ -87,41 +96,54 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'config.wsgi.application'
-ASGI_APPLICATION = 'myproject.asgi.application'
+# WSGI_APPLICATION = 'config.wsgi.application'
 
+ASGI_APPLICATION = 'config.asgi.application'
+CHANNEL_LAYERS={
+    'default':{
+        "BACKEND": "channels.layesr.InMemoryChannelLayer"
+    }
+}
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get('POSTGRES_NAME'),
-        'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASSWORD'),
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
         'HOST': 'db',
-        'PORT': 5432,
+        'PORT': 5432
     }
 }
 
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG':{
+            'hosts': [('127.0.0.1', 6379)]
+        }
+    }
+}
 # REST FRAMEWORK 
 # https://www.django-rest-framework.org/
 REST_FRAMEWORK = {
     'DEFAULT_PERMISSIONS_CLASSES': [
         'rest_framework.permissions.DjangoModelPermissionsOrAnonReadOnly'
-    ]
+    ],
+    'DEFAULT_AUTHENTICATION_CLASSES':[
+        'rest_framework.authentication.TokenAuthentication'
+    ],
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-SWAGGER_SETTINGS = {
-    'USE_SESSION_AUTH': False,
-    'relative_paths': False,
-    "DISPLAY_OPERATION_ID": False,
-    'SECURITY_DEFINITIONS': {
-        'basic': {
-            'type': 'basic'
-        }
-    },
+SPECTACULAR_SETTINGS ={
+    'TITLE': 'CHATY API',
+    'DESCRIPTION': 'Chaty api provides real time communication',
+    'VERSION': '1.0.0'
 }
+
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
@@ -140,6 +162,8 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGIN_URL = 'rest_framework:login'
+LOGOUT_URL = 'rest_framework:logout'
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
@@ -159,9 +183,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# django_heroku.settings(locals())
+# del DATABASES['default']['OPTIONS']['sslmode']

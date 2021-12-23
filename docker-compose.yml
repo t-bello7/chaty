@@ -6,7 +6,7 @@ services:
     environment:
       - SECRET_KEY=django-insecure-6po&b5@zte-^(#+-)(=e$qo1y!faq=*c!igsftjw9-8$z+mg1x
       - DEBUG=1
-      - ENVIROMENT=development
+      # - ENVIROMENT=development
     volumes:
       - .:/chaty
     ports:

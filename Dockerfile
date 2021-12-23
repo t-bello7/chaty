@@ -10,10 +10,11 @@ ENV PATH="/home/appuser/.local/bin:${PATH}"
 
 # Set work directory
 WORKDIR /chaty
-RUN apt-get -y update
-RUN adduser appuser --disabled-password
-RUN chown -R appuser:appuser /chaty
+RUN apt-get -y update && apt-get install -y 
+RUN adduser appuser --disabled-password 
+RUN chown -R appuser:appuser /chaty 
 RUN chmod 775 /chaty
+
 
 USER appuser
 
@@ -29,6 +30,11 @@ RUN pip install pipenv && pipenv install --system
 #Ask about this pipenv and docker 
 
 # RUN pip install -r requirements.txt
-
 COPY . /chaty/
-CMD gunicorn config.wsgi.application --bind 0.0.0.0:$PORT
+USER root
+RUN chmod -R u+x ./entrypoint.sh
+
+ENTRYPOINT [ "./entrypoint.sh" ]
+
+CMD ["sh", "-c","tail -f /dev/null"]
+USER appuser
