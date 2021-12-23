@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.generics import GenericAPIView
-from message.serializers import RoomSerializer, RecieptSerialzer, MessageSerializer
+from message.serializers import RoomSerializer, MessageSerializer
 from message.models import Room, RoomMessage
 from channels.layers import get_channel_layer
 
@@ -52,13 +52,13 @@ class MessagerAPIView(GenericAPIView):
         serializer_class = MessageSerializer
         return Response({'delete':'message'})
 
-class ReceiptsAPIView(GenericAPIView):
-    permission_classes = [IsAuthenticated]
+# class ReceiptsAPIView(GenericAPIView):
+#     permission_classes = [IsAuthenticated]
     
-    def get(self, request):
-        serializer_class = RecieptSerialzer
-        return Response({'list':'readrecipts'})
-    def post(self, request):
-        serializer_class = RecieptSerialzer
-        return Response({'Update':'read receipt on message'})
+#     def get(self, request):
+#         serializer_class = RecieptSerialzer
+#         return Response({'list':'readrecipts'})
+#     def post(self, request):
+#         serializer_class = RecieptSerialzer
+#         return Response({'Update':'read receipt on message'})
 
